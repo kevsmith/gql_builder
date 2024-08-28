@@ -7,13 +7,13 @@ defmodule GqlBuilder.Query do
           exprs: [Expr.t()]
         }
 
-  @spec new(Expr.t() | [Expr.t()]) :: t()
-  def new(%Expr{} = expr) do
-    %__MODULE__{exprs: [expr]}
+  @spec new(Keyword.t()) :: t()
+  def new(spec) do
+    %__MODULE__{exprs: [Expr.new(spec)]}
   end
 
-  def new(exprs) when is_list(exprs) do
-    %__MODULE__{exprs: exprs}
+  def add_expr(%__MODULE__{exprs: exprs} = expr, new_expr) do
+    %{expr | exprs: exprs ++ [Expr.new(new_expr)]}
   end
 end
 
