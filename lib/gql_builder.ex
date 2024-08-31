@@ -1,6 +1,6 @@
 defmodule GqlBuilder do
   alias GqlBuilder.{Buildable, Expr, Query}
-  @spec query(Expr.spec()) :: Query.t()
+  @spec query(Expr.expr_spec()) :: Query.t()
   def query(spec), do: Query.new(spec)
 
   @spec build(Buildable.t()) :: binary()

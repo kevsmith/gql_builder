@@ -49,7 +49,7 @@ defmodule GqlBuilder.GqlExprTest do
              GqlBuilder.build(q)
   end
 
-  test "build expr query with subexpr" do
+  test "build expr query with multiple exprs" do
     q =
       GqlBuilder.query(gql_type: :apples, fields: [{:nodes, [:fieldId, :variety]}])
       |> Query.add_expr(gql_type: :page_info, fields: [:end_cursor, :has_next_page])
@@ -58,7 +58,7 @@ defmodule GqlBuilder.GqlExprTest do
              GqlBuilder.build(q)
   end
 
-  test "build expr query with nested fields and subexpr" do
+  test "build expr query with nested fields and multiple exprs" do
     q =
       GqlBuilder.query(
         gql_type: :apples,
@@ -70,7 +70,7 @@ defmodule GqlBuilder.GqlExprTest do
              GqlBuilder.build(q)
   end
 
-  test "build expr query with args, nested fields, and subexpr" do
+  test "build expr query with args, nested fields, and multiple exprs" do
     q =
       GqlBuilder.query(
         gql_type: :apples,
@@ -80,6 +80,24 @@ defmodule GqlBuilder.GqlExprTest do
       |> Query.add_expr(gql_type: :page_info, fields: [:end_cursor, :has_next_page])
 
     assert "query {\n  apples(farmer: \"Simpson\") {\n    nodes {\n      fieldId\n      variety\n      farmer {\n        id\n      }\n    }\n  }\n  pageInfo {\n    endCursor\n    hasNextPage\n  }\n}" ==
+             GqlBuilder.build(q)
+  end
+
+  test "build expr query with nested fields on subexpr" do
+    q =
+      GqlBuilder.query(
+        gql_type: :holdings,
+        args: [farmer: "Simpson"],
+        subexpr: [
+          gql_type: :orchards,
+          args: [after: "abcd"],
+          fields: [{:nodes, [:id, :location]}, {:page_info, [:end_cursor, :has_next_page]}]
+        ]
+      )
+
+    assert "query {\n  holdings(farmer: \"Simpson\") {\n    orchards(after: \"abcd\") {\n      " <>
+             "nodes {\n        id\n        location\n      }\n      pageInfo {\n        " <>
+             "endCursor\n        hasNextPage\n      }\n    }\n  }\n}" ==
              GqlBuilder.build(q)
   end
 end
