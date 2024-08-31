@@ -3,6 +3,6 @@ defprotocol GqlBuilder.Buildable do
   The GqlBuilder.Generate protocol is responsible for
   converting a structure to a valid GraphQL fragment.
   """
-  @spec build(term(), pos_integer()) :: String.t()
+  @spec build(t(), integer()) :: String.t()
   def build(term, indent)
 end

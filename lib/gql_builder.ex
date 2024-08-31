@@ -1,18 +1,13 @@
 defmodule GqlBuilder do
-  @moduledoc """
-  Documentation for `GqlBuilder`.
-  """
+  alias GqlBuilder.{Buildable, Expr, Query}
+  @spec query(Expr.spec()) :: Query.t()
+  def query(spec), do: Query.new(spec)
 
-  @doc """
-  Hello world.
+  @spec build(Buildable.t()) :: binary()
+  def build(thing), do: build(thing, 0)
 
-  ## Examples
-
-      iex> GqlBuilder.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  @spec build(Buildable.t(), integer()) :: binary()
+  def build(thing, indent) when indent > -1 do
+    Buildable.build(thing, indent)
   end
 end

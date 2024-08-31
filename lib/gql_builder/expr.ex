@@ -1,23 +1,20 @@
 defmodule GqlBuilder.Expr do
+  @type spec_option :: {:gql_type, atom()} | {:fields, [atom() | tuple()]} | {:args, Keyword.t()}
+  @type spec :: [] | [spec_option()]
   @type t :: %__MODULE__{
           gql_type: atom(),
-          subexpr: %__MODULE__{},
           fields: [atom() | tuple()],
           args: nil | Keyword.t()
         }
   @enforce_keys [:gql_type, :fields]
   defstruct [:args, :subexpr | @enforce_keys]
 
-  def new(spec \\ []) do
+  @spec new(spec()) :: t()
+  def new(spec) do
     gql_type = Keyword.get(spec, :gql_type)
     fields = Keyword.get(spec, :fields)
     args = Keyword.get(spec, :args)
-    subexpr = Keyword.get(spec, :expr)
-    %__MODULE__{gql_type: gql_type, fields: fields, args: args, subexpr: subexpr}
-  end
-
-  def add_expr(expr = %__MODULE__{subexpr: nil}, spec \\ []) do
-    %{expr | subexpr: new(spec)}
+    %__MODULE__{gql_type: gql_type, fields: fields, args: args}
   end
 end
 

@@ -7,7 +7,7 @@ defmodule GqlBuilder.Query do
           exprs: [Expr.t()]
         }
 
-  @spec new(Keyword.t()) :: t()
+  @spec new(Expr.spec()) :: t()
   def new(spec) do
     %__MODULE__{exprs: [Expr.new(spec)]}
   end
