@@ -84,6 +84,24 @@ defimpl GqlBuilder.Buildable, for: GqlBuilder.Expr do
     Enum.map(fields, &generate_field(&1, indent))
   end
 
+  defp generate_field({:union_on, type, fields}, indent) do
+    fields = generate_fields(fields, indent + 1) |> Enum.join("\n")
+    field = Formatter.indent("...on #{Formatter.to_gql_name(type)}", indent)
+    field <> " {\n" <> fields <> "\n" <> Formatter.indent("}", indent)
+  end
+
+  defp generate_field({name, args, fields}, indent) do
+    field =
+      Formatter.indent(
+        Formatter.to_gql_name(name)
+        |> maybe_add_args(args),
+        indent
+      )
+
+    fields = generate_fields(fields, indent + 1) |> Enum.join("\n")
+    field <> " {\n" <> fields <> "\n" <> Formatter.indent("}", indent)
+  end
+
   defp generate_field({name, fields}, indent) do
     field = Formatter.indent(Formatter.to_gql_name(name), indent)
     fields = generate_fields(fields, indent + 1) |> Enum.join("\n")

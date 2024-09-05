@@ -100,4 +100,21 @@ defmodule GqlBuilder.GqlExprTest do
              "endCursor\n        hasNextPage\n      }\n    }\n  }\n}" ==
              GqlBuilder.build(q)
   end
+
+  test "build expr query with union" do
+    q =
+      GqlBuilder.query(
+        gql_type: :holdings,
+        args: [farmer: "Simpson"],
+        fields: [:id],
+        subexpr: [
+          gql_type: :Transaction_events,
+          args: [last: 10],
+          subexpr: [gql_type: :nodes, fields: [{:union_on, :Sold_event, [:id, :created_at]}]]
+        ]
+      )
+
+    assert "query {\n  holdings(farmer: \"Simpson\") {\n    TransactionEvents(last: 10) {\n      nodes {\n        id\n        createdAt\n        ...on ClosedSaleEvent {\n          id\n          createdAt\n        }\n      }\n    }\n  }\n}" ==
+             GqlBuilder.build(q)
+  end
 end

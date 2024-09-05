@@ -12,12 +12,16 @@ defmodule GqlBuilder.Formatter do
   def to_gql_name(atom) when is_atom(atom), do: to_gql_name(Atom.to_string(atom))
 
   def to_gql_name(text) when is_binary(text) do
-    case String.split(text, "_") do
-      [^text] ->
-        text
+    if String.starts_with?(text, "__") do
+      text
+    else
+      case String.split(text, "_") do
+        [^text] ->
+          text
 
-      [first | rest] ->
-        Enum.join([first | Enum.map(rest, &String.capitalize(&1))])
+        [first | rest] ->
+          Enum.join([first | Enum.map(rest, &String.capitalize(&1))])
+      end
     end
   end
 
@@ -37,7 +41,14 @@ defmodule GqlBuilder.Formatter do
     String.split(text, "_") |> Enum.map(&String.upcase(&1)) |> Enum.join("_")
   end
 
-  def to_gql_value(text) when is_binary(text), do: "\"#{text}\""
+  def to_gql_value(text) when is_binary(text) do
+    if String.upcase(text) == text do
+      to_gql_enum(text)
+    else
+      "\"#{text}\""
+    end
+  end
+
   def to_gql_value(n) when is_number(n), do: "#{n}"
   def to_gql_value(b) when is_boolean(b), do: "#{b}"
   def to_gql_value(a) when is_atom(a), do: to_gql_enum(a)
