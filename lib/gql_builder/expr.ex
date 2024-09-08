@@ -102,6 +102,18 @@ defimpl GqlBuilder.Buildable, for: GqlBuilder.Expr do
     field <> " {\n" <> fields <> "\n" <> Formatter.indent("}", indent)
   end
 
+  defp generate_field({name, args, fields}, indent) do
+    field =
+      Formatter.indent(
+        Formatter.to_gql_name(name)
+        |> maybe_add_args(args),
+        indent
+      )
+
+    fields = generate_fields(fields, indent + 1) |> Enum.join("\n")
+    field <> " {\n" <> fields <> "\n" <> Formatter.indent("}", indent)
+  end
+
   defp generate_field({name, fields}, indent) do
     field = Formatter.indent(Formatter.to_gql_name(name), indent)
     fields = generate_fields(fields, indent + 1) |> Enum.join("\n")

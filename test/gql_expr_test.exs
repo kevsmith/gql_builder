@@ -110,11 +110,14 @@ defmodule GqlBuilder.GqlExprTest do
         subexpr: [
           gql_type: :Transaction_events,
           args: [last: 10],
-          subexpr: [gql_type: :nodes, fields: [{:union_on, :Sold_event, [:id, :created_at]}]]
+          subexpr: [
+            gql_type: :nodes,
+            fields: [{:union_on, :Closed_sale_event, [:id, :created_at]}]
+          ]
         ]
       )
 
-    assert "query {\n  holdings(farmer: \"Simpson\") {\n    TransactionEvents(last: 10) {\n      nodes {\n        id\n        createdAt\n        ...on ClosedSaleEvent {\n          id\n          createdAt\n        }\n      }\n    }\n  }\n}" ==
-             GqlBuilder.build(q)
+    assert "query {\n  holdings(farmer: \"Simpson\") {\n    TransactionEvents(last: 10) {\n      nodes {\n        ...on ClosedSaleEvent {\n          id\n          createdAt\n        }\n      }\n    }\n  }\n}"
+    GqlBuilder.build(q)
   end
 end
